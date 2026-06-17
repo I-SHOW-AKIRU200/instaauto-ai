@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  passwordHash String?
+  createdAt    DateTime          @default(now())
+  configs      InstagramConfig[]
+}
+
+model InstagramConfig {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instagramBusinessId String
+  pageAccessToken     String
+  systemTokenStatus   String    @default("active")
+  promptSettings      String    @default("")
+  scheduleHour        Int       @default(9)
+  lastPostedAt        DateTime?
+  isActive            Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  logs                PostLog[]
+
+  @@unique([userId])
+}
+
+model PostLog {
+  id            String   @id @default(cuid())
+  configId      String
+  config        InstagramConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  topicTitle    String
+  captionGenerated String?
+  imageUrl      String?
+  status        String   @default("PENDING")
+  errorMessage  String?
+  postedAt      DateTime @default(now())
+}
