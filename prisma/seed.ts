@@ -1,10 +1,31 @@
 import { PrismaClient } from "@prisma/client";
+import { createInterface } from "readline";
 
 const prisma = new PrismaClient();
 
+function ask(question: string): Promise<string> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) =>
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    })
+  );
+}
+
 async function main() {
-  const igBusinessId = "17841415178686539";
-  const pageAccessToken = "EAAZBrZAwGBEvQBRjba0ZAT5lsaRbxsuriXdNYCLT6hqcXeVcMg55uoxTsJTiXoDjvntER3iSKtKyvrZCNzEtmEZAQqxh7F3N7jMgsSzqTT2fZBeamCPYF2WezZACmRbZAcp6nZBU3jFdWN8qvKn7ZA3axZAHYo9lyWMn4kx2DOCEZBE8fbwGfvVx2R5hUrujgdsftRqfxlsX";
+  const igBusinessId =
+    process.env.INSTAGRAM_BUSINESS_ID ||
+    (await ask("Enter your Instagram Business ID: "));
+
+  const pageAccessToken =
+    process.env.PAGE_ACCESS_TOKEN ||
+    (await ask("Enter your Facebook Page Access Token: "));
+
+  if (!igBusinessId || !pageAccessToken) {
+    console.error("Both Instagram Business ID and Page Access Token are required.");
+    process.exit(1);
+  }
 
   const userEmail = `user_${igBusinessId}@placeholder.com`;
 
@@ -26,13 +47,13 @@ async function main() {
       instagramBusinessId: igBusinessId,
       pageAccessToken,
       systemTokenStatus: "active",
-      promptSettings: "Web Development Trends",
+      promptSettings: "Coding Memes",
       scheduleHour: 9,
       isActive: true,
     },
   });
 
-  console.log("✅ Seed complete — Instagram config saved for user:", user.email);
+  console.log("✅ Instagram config saved for user:", user.email);
 }
 
 main()

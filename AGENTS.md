@@ -170,7 +170,7 @@ It asks for your UTC offset and posting hour, then sets up systemd + crontab aut
 ## 🔐 CRON_SECRET
 
 ```text
-787b60cc0b5f9d109d53335f6f68fcbf22a51859454d08fe939dbde38284c16a
+YOUR_CRON_SECRET_HERE
 ```
 
 Used for `Authorization: Bearer {CRON_SECRET}` header on `/api/cron/worker`.

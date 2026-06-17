@@ -57,8 +57,10 @@ Open `.env` and fill in every variable. See [CREDENTIALS.md](./CREDENTIALS.md) f
 | `META_APP_ID` | `123456789` | [Facebook Developers](https://developers.facebook.com) |
 | `META_APP_SECRET` | `abc123...` | Facebook Developers → App Settings |
 | `HF_API_TOKEN` | `hf_...` | [Hugging Face tokens](https://huggingface.co/settings/tokens) |
-| `CRON_SECRET` | `787b60cc...` | Generate with `openssl rand -hex 32` |
+| `CRON_SECRET` | `openssl rand -hex 32` | Generate with `openssl rand -hex 32` |
 | `UPLOADTHING_TOKEN` | `eyJ...` | [UploadThing](https://uploadthing.com) → API Keys |
+| `INSTAGRAM_BUSINESS_ID` | *(optional)* | Instagram Biz ID for `npm run seed` |
+| `PAGE_ACCESS_TOKEN` | *(optional)* | Page Access Token for `npm run seed` |
 
 ### 4️⃣ Set up the database
 
