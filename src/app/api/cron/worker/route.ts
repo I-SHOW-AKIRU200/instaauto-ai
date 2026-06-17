@@ -27,21 +27,25 @@ async function handleCron(request: NextRequest) {
     }
 
     const currentHour = new Date().getUTCHours();
-    const adjustedHour = (currentHour - 3 + 24) % 24;
 
     const activeConfigs = await prisma.instagramConfig.findMany({
       where: {
         isActive: true,
         systemTokenStatus: "active",
-        scheduleHour: adjustedHour,
       },
       include: { user: true },
     });
 
-    if (activeConfigs.length === 0) {
+    const matchedConfigs = activeConfigs.filter((c) => {
+      const offset = c.timezoneOffset ?? 3;
+      const localHour = (currentHour + offset + 24) % 24;
+      return localHour === c.scheduleHour;
+    });
+
+    if (matchedConfigs.length === 0) {
       return NextResponse.json({
         message: "No active configurations matched the current schedule hour",
-        checkedHour: adjustedHour,
+        checkedHour: (currentHour + 3 + 24) % 24,
       });
     }
 
@@ -52,7 +56,7 @@ async function handleCron(request: NextRequest) {
       error?: string;
     }[] = [];
 
-    for (const config of activeConfigs) {
+    for (const config of matchedConfigs) {
       try {
         const topicTitle = await generateTopic(config.promptSettings);
         const artPrompt = await generateArtPrompt(topicTitle);
@@ -140,7 +144,7 @@ async function handleCron(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: `Processed ${activeConfigs.length} configurations`,
+      message: `Processed ${matchedConfigs.length} configurations`,
       results,
     });
   } catch (error) {

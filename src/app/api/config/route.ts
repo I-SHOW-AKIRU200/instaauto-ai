@@ -22,6 +22,7 @@ export async function GET() {
         instagramBusinessId: config.instagramBusinessId,
         promptSettings: config.promptSettings,
         scheduleHour: config.scheduleHour,
+        timezoneOffset: config.timezoneOffset,
         lastPostedAt: config.lastPostedAt,
         isActive: config.isActive,
       },
@@ -44,7 +45,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, email, promptSettings, scheduleHour, isActive } = body;
+    const { userId, email, promptSettings, scheduleHour, timezoneOffset, isActive } = body;
 
     let config;
 
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...(promptSettings !== undefined && { promptSettings }),
         ...(scheduleHour !== undefined && { scheduleHour }),
+        ...(timezoneOffset !== undefined && { timezoneOffset }),
         ...(isActive !== undefined && { isActive }),
       },
     });
@@ -84,6 +86,7 @@ export async function POST(request: NextRequest) {
         instagramBusinessId: updated.instagramBusinessId,
         promptSettings: updated.promptSettings,
         scheduleHour: updated.scheduleHour,
+        timezoneOffset: updated.timezoneOffset,
         isActive: updated.isActive,
         lastPostedAt: updated.lastPostedAt,
       },

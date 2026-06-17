@@ -24,6 +24,7 @@ model InstagramConfig {
   systemTokenStatus   String    @default("active")
   promptSettings      String    @default("")
   scheduleHour        Int       @default(9)
+  timezoneOffset      Int       @default(3)
   lastPostedAt        DateTime?
   isActive            Boolean   @default(true)
   createdAt           DateTime  @default(now())

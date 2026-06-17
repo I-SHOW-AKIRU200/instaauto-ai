@@ -1,131 +1,218 @@
-# Credentials Guide
+<div align="center">
 
-How to get each environment variable needed to run InstaAuto AI.
+# 🔑 CREDENTIALS.md
+
+**How to obtain every environment variable for InstaAuto AI**
+
+[![Meta](https://img.shields.io/badge/Meta-1877F2?style=flat-square&logo=meta)](https://developers.facebook.com/)
+[![Neon](https://img.shields.io/badge/Neon-00E599?style=flat-square&logo=neon)](https://neon.tech/)
+[![HuggingFace](https://img.shields.io/badge/Hugging%20Face-FFD21E?style=flat-square&logo=huggingface)](https://huggingface.co/)
+[![UploadThing](https://img.shields.io/badge/UploadThing-2563EB?style=flat-square)](https://uploadthing.com/)
+
+</div>
 
 ---
 
-## `DATABASE_URL` — PostgreSQL Database
+## 📋 Overview
 
-**Recommended:** [Neon.tech](https://neon.tech) (free tier, serverless PostgreSQL)
+You need **7 environment variables** to run InstaAuto AI. This guide walks through getting each one.
 
-1. Sign up at https://neon.tech
-2. Create a new project (choose any region)
-3. Copy the connection string — it looks like:
-   ```
-   postgresql://user:password@ep-xxxxx.region.aws.neon.tech/dbname?sslmode=require
-   ```
+---
+
+## 1️⃣ `DATABASE_URL` — PostgreSQL Database
+
+**Service:** [Neon.tech](https://neon.tech) (free serverless PostgreSQL)
+
+```mermaid
+flowchart LR
+    A[Sign up at Neon] --> B[Create project]
+    B --> C[Copy connection string]
+    C --> D[Paste into .env]
+```
+
+### Steps
+
+1. **Sign up** at [neon.tech](https://neon.tech) (GitHub login works)
+2. **Create a new project** — any region
+3. Copy the **connection string** from the dashboard:
+
+```
+postgresql://user:password@ep-xxxxx.region.aws.neon.tech/neondb?sslmode=require
+```
+
 4. Paste as `DATABASE_URL` in `.env`
 
----
-
-## `META_APP_ID` & `META_APP_SECRET` — Meta App
-
-**Required:** Facebook Developer account
-
-1. Go to https://developers.facebook.com
-2. Create a new app (choose "Business" type)
-3. Go to **Settings → Basic**
-4. Copy **App ID** → `META_APP_ID`
-5. Copy **App Secret** → `META_APP_SECRET`
-6. Add the **Instagram Graph API** product to your app
-7. In Instagram Graph API settings, add your Instagram Account (must be a Business/Creator account)
-
-> **Note:** The app can stay in Development mode. OAuth is not used — authentication is via direct Page Access Token.
+> 💡 The URL includes `?sslmode=require` — keep this for Neon.
 
 ---
 
-## `HF_API_TOKEN` — Hugging Face
+## 2️⃣ `META_APP_ID` & `META_APP_SECRET` — Facebook App
 
-1. Sign up at https://huggingface.co
-2. Go to https://huggingface.co/settings/tokens
-3. Create a new token (Read role is sufficient)
-4. Copy the token (starts with `hf_`)
-5. Paste as `HF_API_TOKEN` in `.env`
+**Service:** [Facebook Developers](https://developers.facebook.com)
 
-This token is used to access DeepSeek-V3 via Hugging Face's inference router.
+```mermaid
+flowchart LR
+    A[Facebook Dev account] --> B[Create Business app]
+    B --> C[Add Instagram Graph API]
+    C --> D[Copy App ID & Secret]
+```
+
+### Steps
+
+1. Go to [developers.facebook.com](https://developers.facebook.com)
+2. **Create a new app** → Choose **Business** type
+3. In the dashboard, **Add Product** → **Instagram Graph API**
+4. Go to **Settings → Basic**
+5. Copy **App ID** → `META_APP_ID`
+6. Click **Show** → Copy **App Secret** → `META_APP_SECRET`
+
+### Required Permissions
+
+| Permission | Purpose |
+|------------|---------|
+| `instagram_basic` | Read Instagram account info |
+| `instagram_content_publish` | Publish posts |
+| `pages_show_list` | List Facebook pages |
+| `pages_read_engagement` | Read page engagement data |
+
+> **Note:** The app can stay in **Development mode**. OAuth is not used.
 
 ---
 
-## `CRON_SECRET` — Cron Authentication
+## 3️⃣ `HF_API_TOKEN` — Hugging Face
 
-This is a random string used to authenticate cron job calls.
+**Service:** [Hugging Face](https://huggingface.co)
 
-Generate one:
+### Steps
+
+1. **Sign up** at [huggingface.co](https://huggingface.co/join)
+2. Go to **Settings → [Access Tokens](https://huggingface.co/settings/tokens)**
+3. Click **New token**
+4. Choose **Read** role
+5. Copy the token (starts with `hf_`)
+6. Paste as `HF_API_TOKEN` in `.env`
+
+This token authenticates requests to DeepSeek-V3 via Hugging Face's inference router.
+
+---
+
+## 4️⃣ `CRON_SECRET` — Cron Authentication
+
+**Purpose:** Authenticates cron job HTTP requests to the pipeline endpoint.
+
+### Generate
 
 ```bash
 openssl rand -hex 32
-# Example output: 787b60cc0b5f9d109d53335f6f68fcbf22a51859454d08fe939dbde38284c16a
 ```
 
-Paste as `CRON_SECRET` in `.env`.
+**Example output:**
+
+```
+787b60cc0b5f9d109d53335f6f68fcbf22a51859454d08fe939dbde38284c16a
+```
+
+Paste the output as `CRON_SECRET` in `.env`.
+
+> 🔒 Use a different random value for production.
 
 ---
 
-## `UPLOADTHING_TOKEN` — UploadThing
+## 5️⃣ `UPLOADTHING_TOKEN` — UploadThing
 
-1. Sign up at https://uploadthing.com
-2. Create a new app
+**Service:** [UploadThing](https://uploadthing.com) (image CDN)
+
+### Steps
+
+1. **Sign up** at [uploadthing.com](https://uploadthing.com)
+2. Create a **new app**
 3. Go to **Settings → API Keys**
-4. Copy the token
+4. Copy the token (a JWT starting with `eyJ...`)
 5. Paste as `UPLOADTHING_TOKEN` in `.env`
 
-UploadThing is used to store generated images before passing them to Instagram.
+UploadThing stores generated images before passing them to Instagram.
 
 ---
 
-## Instagram Business ID & Page Access Token
+## 6️⃣ `NEXT_PUBLIC_APP_URL` — Public URL
 
-These are seeded into the database (not in `.env`).
+| Environment | Value |
+|-------------|-------|
+| **Local dev** | `http://localhost:3000` |
+| **Production** | `https://yourdomain.com` |
+| **Tunnel** | `https://xxxxx.trycloudflare.com` |
+
+---
+
+## 7️⃣ Instagram Business ID & Page Access Token
+
+These are seeded **directly into the database** (not in `.env`).
 
 ### Page Access Token (never expires)
 
-1. Go to https://developers.facebook.com/tools/explorer
+```mermaid
+flowchart LR
+    A[Graph API Explorer] --> B[Select app + Page token]
+    B --> C[Copy token]
+```
+
+1. Go to [developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 2. Select your app
-3. Get a **Page Access Token** with these permissions:
-   - `instagram_basic`
-   - `instagram_content_publish`
-   - `pages_show_list`
-   - `pages_read_engagement`
-4. Copy the token
+3. **Add permissions:** `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`
+4. Get a **Page Access Token**
+5. It will have `expires_at: 0` (never expires for Pages with certain configs)
 
 ### Instagram Business ID
 
-1. Make a GET request to:
-   ```
-   GET /me/accounts?access_token={PAGE_ACCESS_TOKEN}
-   ```
-   Find your Page ID.
+```bash
+# 1. Find your Facebook Page ID
+curl -s "https://graph.facebook.com/v22.0/me/accounts?access_token=PAGE_TOKEN"
 
-2. Then:
-   ```
-   GET /{PAGE_ID}?fields=instagram_business_account&access_token={PAGE_ACCESS_TOKEN}
-   ```
-   The `id` field is your Instagram Business ID.
+# 2. Find linked Instagram Business Account
+curl -s "https://graph.facebook.com/v22.0/PAGE_ID?fields=instagram_business_account&access_token=PAGE_TOKEN"
+```
 
-3. Run the seed script:
-   ```bash
-   npx tsx prisma/seed.ts
-   ```
-   Follow the prompts to enter Business ID and Page Access Token.
+The `id` in the response is your **Instagram Business ID**.
 
----
+### Seed into database
 
-## `NEXT_PUBLIC_APP_URL` — Public URL
+```bash
+npm run seed
+```
 
-- **Local development:** `http://localhost:3000`
-- **Production:** Your domain or Cloudflare tunnel URL (e.g., `https://your-tunnel.trycloudflare.com`)
-- Used for UploadThing webhook callbacks and (optionally) OAuth redirects
+Follow the prompts to enter the Business ID and Page Access Token.
 
 ---
 
-## Quick Reference
+## 🎯 Quick Reference Card
 
-| Variable | Where to get it | Format |
-|----------|----------------|--------|
-| `DATABASE_URL` | Neon.tech project dashboard | `postgresql://...` |
-| `META_APP_ID` | Facebook Developer → App Settings | Numeric string |
-| `META_APP_SECRET` | Facebook Developer → App Settings | Alphanumeric string |
-| `HF_API_TOKEN` | Hugging Face → Settings → Tokens | `hf_...` |
-| `CRON_SECRET` | Generate with `openssl rand -hex 32` | Hex string |
-| `UPLOADTHING_TOKEN` | UploadThing → App → API Keys | `eyJ...` (JWT) |
-| `NEXT_PUBLIC_APP_URL` | Your deployment URL | URL string |
+| # | Variable | Where | Format | Priority |
+|---|----------|-------|--------|----------|
+| ① | `DATABASE_URL` | [Neon dashboard](https://neon.tech) | `postgresql://...` | ✅ Required |
+| ② | `META_APP_ID` | [Facebook Dev](https://developers.facebook.com) | Numeric string | ✅ Required |
+| ③ | `META_APP_SECRET` | Facebook Dev → Settings | Alphanumeric | ✅ Required |
+| ④ | `HF_API_TOKEN` | [HF tokens page](https://huggingface.co/settings/tokens) | `hf_...` | ✅ Required |
+| ⑤ | `CRON_SECRET` | `openssl rand -hex 32` | Hex string | ✅ Required |
+| ⑥ | `UPLOADTHING_TOKEN` | [UploadThing API Keys](https://uploadthing.com) | `eyJ...` (JWT) | ✅ Required |
+| ⑦ | `NEXT_PUBLIC_APP_URL` | Your deployment URL | `http://...` | ✅ Required |
+| ⑧ | Instagram Business ID | Graph API query | Numeric string | In DB seed |
+| ⑨ | Page Access Token | Graph API Explorer | Long string | In DB seed |
+
+---
+
+## 🔐 Security Notes
+
+- **Never commit `.env` to Git** — it's in `.gitignore`
+- Page Access Token with `expires_at: 0` **should not expire** but verify periodically
+- The `CRON_SECRET` should be unique per deployment
+- Rotate tokens if they're ever exposed
+
+---
+
+## 📚 Related Docs
+
+| Doc | Description |
+|-----|-------------|
+| [`SETUP.md`](./SETUP.md) | Full installation guide |
+| [`AGENTS.md`](./AGENTS.md) | AI agent instructions |
+| [`.env.example`](./.env.example) | Environment template |

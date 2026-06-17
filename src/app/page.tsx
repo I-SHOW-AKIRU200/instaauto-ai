@@ -6,6 +6,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-neutral-950 flex flex-col">
       <div className="fixed inset-0 bg-radial-gradient pointer-events-none" />
+      <div className="fixed inset-0 bg-radial-gradient-right pointer-events-none" />
 
       <header className="relative z-10 flex items-center justify-between px-8 py-6">
         <div className="flex items-center gap-3">
@@ -73,11 +74,14 @@ export default function LandingPage() {
               title: "Automated Publishing",
               desc: "Scheduled posts are published to your Instagram feed at your chosen hour.",
             },
-          ].map((feature) => (
+          ].map((feature, i) => (
             <div
               key={feature.title}
               className="glass-card p-6 text-left"
             >
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 flex items-center justify-center mb-4">
+                <SparklesIcon className="w-5 h-5 text-indigo-400" />
+              </div>
               <h3 className="text-white font-semibold text-lg mb-2">
                 {feature.title}
               </h3>
